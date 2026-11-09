@@ -14,6 +14,9 @@
    License GNU Lesser General Public License v3.0.
 */
 
+#ifndef SNTP_CLIENT_HPP_INCLUDED
+#define SNTP_CLIENT_HPP_INCLUDED
+
 #include <Arduino.h>
 #include <Udp.h>
 #include <Dns.h>
@@ -391,3 +394,5 @@ namespace NTP {
    }; // End of class SNTPClient
 
 } // End of namespace NTP
+
+#endif // SNTP_CLIENT_HPP_INCLUDED
