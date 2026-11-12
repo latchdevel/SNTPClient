@@ -211,20 +211,28 @@ namespace NTP {
             if (udp.begin(srcPort)) {
                // Checking for NTP server name
                if (ntpServerName) {
-                  #if defined(USE_ETHERNET_DNS)
-                     // Custom Ethernet DNS resolve (<2 seconds timeout)
+                  // Use custom DNS resolution if the network library exposes the DNS server IP (<2 seconds timeout)
+                  #if defined(ethernet_h_) || defined(WiFiNINA_h) || (defined(ARDUINO_ARCH_ESP32) && defined(SOC_WIFI_SUPPORTED)) || defined(ARDUINO_ARCH_ESP8266)
+                     // Instantiate a custom DNS client
                      DNSClient dns;
 
-                     dns.begin(Ethernet.dnsServerIP());
+                     #if defined(ethernet_h_)
+                        // Initialize DNS over Ethernet
+                        dns.begin(Ethernet.dnsServerIP());
+                     #else
+                        // Initialize DNS over WiFi
+                        dns.begin(WiFi.dnsIP());
+                     #endif
 
+                     // DNS resolves NTP server name to IP
                      if (dns.getHostByName(ntpServerName, ntpServerIp, timeout_ms) == 1) {
-                        // UDP begin IP packet
+                        // Begin UDP packet to target NTP server IP
                         beginPacketStatus = udp.beginPacket(ntpServerIp, dstPort);
                      } else {
                         errorCode = DNSResolveError;
                      }
                   #else
-                     // UDP begin packet native DNS resolve (>15 seconds timeout)
+                     // Begin UDP packet to target to NTP server name via native DNS resolution (>15 seconds timeout)
                      beginPacketStatus = udp.beginPacket(ntpServerName, dstPort);
                   #endif
                } else {
