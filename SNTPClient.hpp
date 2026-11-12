@@ -154,7 +154,7 @@ namespace NTP {
          /**
           * @brief Constructs an SNTPClient instance using only a UDP socket reference.
           * @details Use this constructor if the target server will be specified dynamically 
-          *          during runtime operations or resolved through manual overrides.
+          *          during runtime via setServer() before calling get().
           * @param udp Reference to an initialized UDP object (e.g., EthernetUDP, WiFiUDP).
          */
          SNTPClient(UDP &udp) : udp(udp) {} ;
@@ -180,6 +180,32 @@ namespace NTP {
           * @details Allows external inspection of failure codes without permitting modification.
          */
          const uint8_t& error = errorCode; 
+
+         /**  
+          * @brief Sets the target NTP server using a static IP address.  
+          * @details Overrides any previously configured server. Clears the stored   
+          *          domain name so that get() uses the IP address directly without   
+          *          performing DNS resolution.  
+          * @param ntpServerIp The static IP Address of the target remote NTP server.  
+          * @note Passing INADDR_NONE will cause get() to fail with NTPServerIpError.  
+         */
+         void setServer(IPAddress ntpServerIp) {  
+            this->ntpServerIp   = ntpServerIp;  
+            this->ntpServerName = nullptr;  
+         };
+  
+         /**  
+          * @brief Sets the target NTP server using a domain name string.  
+          * @details Overrides any previously configured server. The domain name will   
+          *          be resolved via DNS using the configured timeout parameters when   
+          *          get() execution begins.  
+          * @param ntpServerName Null-terminated character string containing the remote host domain.  
+          * @note The string is stored by pointer, not copied; the caller must ensure   
+          *       it remains valid for the lifetime of this object.  
+         */  
+         void setServer(const char* ntpServerName) {  
+            this->ntpServerName = ntpServerName;  
+         };
 
          /**
           * @brief Requests and retrieves the current time from the configured SNTP server.
