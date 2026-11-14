@@ -220,7 +220,7 @@ namespace NTP {
           * @note If the function returns 0, a specific error condition is logged. The caller should check the public read-only 
           *       reference `error` to diagnose the failure reason.
          */
-         time_t get(uint16_t timeout_ms = 500, uint16_t dstPort = 123, uint16_t srcPort = 0 ){
+         time_t getTime(uint16_t timeout_ms = 500, uint16_t dstPort = 123, uint16_t srcPort = 0 ){
             
             time_t result{};
             int beginPacketStatus{};
